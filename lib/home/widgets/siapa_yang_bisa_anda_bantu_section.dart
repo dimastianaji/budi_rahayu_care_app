@@ -1,3 +1,4 @@
+import 'package:budi_rahayu_care_app/children/view/children_page.dart';
 import 'package:flutter/material.dart';
 
 class SiapaYangBisaAndaBantuSection extends StatelessWidget {
@@ -85,7 +86,10 @@ class SiapaYangBisaAndaBantuSection extends StatelessWidget {
               elevation: 6,
             ),
             onPressed: () {
-              // Aksi saat tombol ditekan
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ChildrenPage()),
+              );
             },
             child: const Text(
               'Lihat Semua Anak',
