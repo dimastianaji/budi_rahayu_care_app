@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:budi_rahayu_care_app/home/view/home_page.dart';
 
 class Header extends StatefulWidget {
   const Header({super.key});
@@ -28,9 +29,17 @@ class _HeaderState extends State<Header> {
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       // Logo lengkap yayasan
-      Image.asset(
-        'lib/shared/assets/images/logo.png',
-        height: 45,
+      InkWell(
+        onTap: () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomePage()),
+          );
+        },
+        child: Image.asset(
+          'lib/shared/assets/images/logo.png',
+          height: 45,
+        ),
       ),
 
       // Tombol menu 3 garis

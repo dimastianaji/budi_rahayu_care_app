@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:budi_rahayu_care_app/home/view/home_page.dart';
 
 class Footer extends StatelessWidget {
   const Footer({super.key});
@@ -13,9 +14,17 @@ class Footer extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           // Logo Yayasan
-          Image.asset(
-            'lib/shared/assets/images/logo.png',
-            height: 50,
+          InkWell(
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const HomePage()),
+              );
+            },
+            child: Image.asset(
+              'lib/shared/assets/images/logo.png',
+              height: 45,
+            ),
           ),
           const SizedBox(height: 24),
 
