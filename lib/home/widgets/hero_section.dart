@@ -56,7 +56,7 @@ class HeroSection extends StatelessWidget {
 
           // Gambar utama
           Image.asset(
-            'lib/assets/images/foto_hero_section.png', 
+            'lib/shared/assets/images/foto_hero_section.png', 
             width: double.infinity,
             fit: BoxFit.cover,
           ),
