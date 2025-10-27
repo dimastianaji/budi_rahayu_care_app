@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'widgets/header.dart';
 import 'widgets/footer.dart';
+import 'widgets/hero_section.dart'; // tambahkan hero section kamu
 
 void main() {
   runApp(const MyApp());
@@ -15,20 +16,15 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Header(), // bagian atas
-              Expanded(
-                child: Center(
-                  child: Text(
-                    'Halaman Utama Yayasan',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
-              FooterSection(), // bagian bawah
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Header(),           // bagian atas
+                HeroSection(),      // bagian isi/hero
+                FooterSection(),    // bagian bawah
+              ],
+            ),
           ),
         ),
       ),
