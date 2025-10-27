@@ -1,9 +1,8 @@
 // lib/shared/widgets/footer.dart
 import 'package:flutter/material.dart';
-
-// Hanya import halaman yang sudah ada
 import 'package:budi_rahayu_care_app/home/view/home_page.dart';
 import 'package:budi_rahayu_care_app/contact/view/kontak_kami_page.dart';
+import 'package:budi_rahayu_care_app/about/view/tentang_page.dart';
 
 class Footer extends StatelessWidget {
   const Footer({super.key});
@@ -11,7 +10,7 @@ class Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFF0D1B66), // warna biru tua
+      color: const Color(0xFF0D1B66), 
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 16),
       child: Column(
@@ -32,10 +31,14 @@ class Footer extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // Menu Navigasi (hanya "Kontak Kami" yang berfungsi)
           Column(
             children: [
-              _footerLink("Tentang", () {}),
+              _footerLink("Tentang", () {
+                Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const TentangPage()),
+              );
+              }),
               const SizedBox(height: 8),
               _footerLink("Donasi", () {}),
               const SizedBox(height: 8),
@@ -72,7 +75,6 @@ class Footer extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  // Nanti bisa buka Instagram: launchUrl(Uri.parse('https://instagram.com/...'))
                 },
                 child: Image.asset(
                   'lib/shared/assets/icons/instagram.png',
@@ -83,7 +85,6 @@ class Footer extends StatelessWidget {
               const SizedBox(width: 16),
               GestureDetector(
                 onTap: () {
-                  // Nanti bisa buka WhatsApp: launchUrl(Uri.parse('https://wa.me/...'))
                 },
                 child: Image.asset(
                   'lib/shared/assets/icons/whatsapp.png',
