@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class FooterSection extends StatelessWidget {
-  const FooterSection({super.key});
+class Footer extends StatelessWidget {
+  const Footer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class FooterSection extends StatelessWidget {
         children: [
           // Logo Yayasan
           Image.asset(
-            'lib/assets/images/logo.png',
+            'lib/shared/assets/images/logo.png',
             height: 50,
           ),
           const SizedBox(height: 24),
@@ -57,7 +57,7 @@ class FooterSection extends StatelessWidget {
                   // aksi ketika ikon Instagram ditekan
                 },
                 child: Image.asset(
-                  'lib/assets/icons/instagram.png',
+                  'lib/shared/assets/icons/instagram.png',
                   height: 24,
                   width: 24,
                 ),
@@ -68,7 +68,7 @@ class FooterSection extends StatelessWidget {
                   // aksi ketika ikon WhatsApp ditekan
                 },
                 child: Image.asset(
-                  'lib/assets/icons/whatsapp.png',
+                  'lib/shared/assets/icons/whatsapp.png',
                   height: 24,
                   width: 24,
                 ),

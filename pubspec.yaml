@@ -18,9 +18,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - lib/assets/images/
-    - lib/assets/images/logo.png
-    - lib/assets/images/foto_hero_section.png
-    - lib/assets/icons/
-    - lib/assets/icons/instagram.png
-    - lib/assets/icons/whatsapp.png
+    - lib/shared/assets/images/
+    - lib/shared/assets/images/logo.png
+    - lib/shared/assets/images/foto_hero_section.png
+    - lib/shared/assets/icons/
+    - lib/shared/assets/icons/instagram.png
+    - lib/shared/assets/icons/whatsapp.png
