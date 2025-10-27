@@ -4,6 +4,9 @@ import 'package:budi_rahayu_care_app/shared/widgets/header.dart';
 import 'package:budi_rahayu_care_app/shared/widgets/footer.dart';
 import 'package:budi_rahayu_care_app/home/widgets/hero_section.dart';
 import 'package:budi_rahayu_care_app/home/widgets/tujuan_kami_section.dart'; 
+import 'package:budi_rahayu_care_app/home/widgets/siapa_yang_bisa_anda_bantu_section.dart';
+import 'package:budi_rahayu_care_app/home/widgets/berita_section.dart';
+import 'package:budi_rahayu_care_app/home/widgets/dokumentasi_section.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -18,7 +21,10 @@ class HomePage extends StatelessWidget {
             children: [
               Header(),
               HeroSection(),
-              TujuanKamiSection(), 
+              TujuanKamiSection(),
+              SiapaYangBisaAndaBantuSection(),
+              BeritaSection(),
+              DokumentasiSection(),
               Footer(),
             ],
           ),
