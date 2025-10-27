@@ -1,9 +1,8 @@
 // lib/shared/widgets/header.dart
 import 'package:flutter/material.dart';
-
-// Hanya import halaman yang benar-benar ada
 import 'package:budi_rahayu_care_app/home/view/home_page.dart';
 import 'package:budi_rahayu_care_app/contact/view/kontak_kami_page.dart';
+import 'package:budi_rahayu_care_app/about/view/tentang_page.dart';
 
 class Header extends StatefulWidget {
   const Header({super.key});
@@ -68,7 +67,12 @@ class _HeaderState extends State<Header> {
             width: double.infinity,
             child: Column(
               children: [
-                _menuItem("Tentang", () {}),
+                _menuItem("Tentang", () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => const TentangPage()),
+                  );
+                }),
                 _menuItem("Donasi", () {}),
                 _menuItem("Berita", () {}),
                 _menuItem("Kontak Kami", () {
@@ -94,7 +98,7 @@ class _HeaderState extends State<Header> {
         setState(() {
           _isMenuOpen = false;
         });
-        onTap(); // Jika onTap kosong, tidak ada aksi
+        onTap(); 
       },
       child: Container(
         width: double.infinity,
