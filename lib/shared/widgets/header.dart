@@ -29,7 +29,7 @@ class _HeaderState extends State<Header> {
     children: [
       // Logo lengkap yayasan
       Image.asset(
-        'lib/assets/images/logo.png',
+        'lib/shared/assets/images/logo.png',
         height: 45,
       ),
 
