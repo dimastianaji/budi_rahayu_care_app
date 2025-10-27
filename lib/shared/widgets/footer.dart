@@ -1,5 +1,9 @@
+// lib/shared/widgets/footer.dart
 import 'package:flutter/material.dart';
+
+// Hanya import halaman yang sudah ada
 import 'package:budi_rahayu_care_app/home/view/home_page.dart';
+import 'package:budi_rahayu_care_app/contact/view/kontak_kami_page.dart';
 
 class Footer extends StatelessWidget {
   const Footer({super.key});
@@ -13,7 +17,7 @@ class Footer extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Logo Yayasan
+          // Logo Yayasan → kembali ke HomePage
           InkWell(
             onTap: () {
               Navigator.pushReplacement(
@@ -28,16 +32,21 @@ class Footer extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // Menu Navigasi
-          const Column(
+          // Menu Navigasi (hanya "Kontak Kami" yang berfungsi)
+          Column(
             children: [
-              Text('Tentang', style: TextStyle(color: Colors.white, fontSize: 14)),
-              SizedBox(height: 8),
-              Text('Donasi', style: TextStyle(color: Colors.white, fontSize: 14)),
-              SizedBox(height: 8),
-              Text('Berita', style: TextStyle(color: Colors.white, fontSize: 14)),
-              SizedBox(height: 8),
-              Text('Kontak Kami', style: TextStyle(color: Colors.white, fontSize: 14)),
+              _footerLink("Tentang", () {}),
+              const SizedBox(height: 8),
+              _footerLink("Donasi", () {}),
+              const SizedBox(height: 8),
+              _footerLink("Berita", () {}),
+              const SizedBox(height: 8),
+              _footerLink("Kontak Kami", () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const KontakKamiPage()),
+                );
+              }),
             ],
           ),
           const SizedBox(height: 24),
@@ -63,7 +72,7 @@ class Footer extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  // aksi ketika ikon Instagram ditekan
+                  // Nanti bisa buka Instagram: launchUrl(Uri.parse('https://instagram.com/...'))
                 },
                 child: Image.asset(
                   'lib/shared/assets/icons/instagram.png',
@@ -74,7 +83,7 @@ class Footer extends StatelessWidget {
               const SizedBox(width: 16),
               GestureDetector(
                 onTap: () {
-                  // aksi ketika ikon WhatsApp ditekan
+                  // Nanti bisa buka WhatsApp: launchUrl(Uri.parse('https://wa.me/...'))
                 },
                 child: Image.asset(
                   'lib/shared/assets/icons/whatsapp.png',
@@ -85,6 +94,17 @@ class Footer extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  // Widget helper untuk link footer
+  Widget _footerLink(String title, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Text(
+        title,
+        style: const TextStyle(color: Colors.white, fontSize: 14),
       ),
     );
   }
