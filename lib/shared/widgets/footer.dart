@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:budi_rahayu_care_app/home/view/home_page.dart';
 import 'package:budi_rahayu_care_app/contact/view/kontak_kami_page.dart';
 import 'package:budi_rahayu_care_app/about/view/tentang_page.dart';
+import 'package:budi_rahayu_care_app/news/news/news_page.dart';
 
 class Footer extends StatelessWidget {
   const Footer({super.key});
@@ -42,7 +43,12 @@ class Footer extends StatelessWidget {
               const SizedBox(height: 8),
               _footerLink("Donasi", () {}),
               const SizedBox(height: 8),
-              _footerLink("Berita", () {}),
+              _footerLink("Berita", () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const NewsPage()),
+                );
+              }),
               const SizedBox(height: 8),
               _footerLink("Kontak Kami", () {
                 Navigator.pushReplacement(

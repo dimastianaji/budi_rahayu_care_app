@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:budi_rahayu_care_app/home/view/home_page.dart';
 import 'package:budi_rahayu_care_app/contact/view/kontak_kami_page.dart';
 import 'package:budi_rahayu_care_app/about/view/tentang_page.dart';
+import 'package:budi_rahayu_care_app/news/news/news_page.dart';
 
 class Header extends StatefulWidget {
   const Header({super.key});
@@ -74,7 +75,12 @@ class _HeaderState extends State<Header> {
                   );
                 }),
                 _menuItem("Donasi", () {}),
-                _menuItem("Berita", () {}),
+                _menuItem("Berita", () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => const NewsPage()),
+                  );
+                }),
                 _menuItem("Kontak Kami", () {
                   Navigator.pushReplacement(
                     context,
