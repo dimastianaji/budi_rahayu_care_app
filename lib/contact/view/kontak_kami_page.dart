@@ -1,7 +1,6 @@
 // lib/features/kontak_kami/view/kontak_kami_page.dart
 import 'package:flutter/material.dart';
 import 'package:budi_rahayu_care_app/shared/widgets/header.dart';
-import 'package:budi_rahayu_care_app/shared/widgets/footer.dart';
 import 'package:budi_rahayu_care_app/shared/widgets/bottom_nav.dart';
 
 class KontakKamiPage extends StatelessWidget {
