@@ -14,48 +14,36 @@ class NewsCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 6,
-              offset: const Offset(0, 3),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [BoxShadow(blurRadius: 4, color: Colors.grey.withOpacity(0.2))],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-              child: Image.asset(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              child: Image.network(
                 news.imageUrl,
+                height: 120,
                 width: double.infinity,
-                height: 180,
                 fit: BoxFit.cover,
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(news.date, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                  const SizedBox(height: 6),
-                  Text(news.title,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 6),
                   Text(
-                    news.description,
+                    news.title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 14, color: Colors.black87),
                   ),
-                  const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: onTap,
-                    child: const Text('Baca Selengkapnya →', style: TextStyle(color: Colors.blue)),
+                  const SizedBox(height: 4),
+                  Text(
+                    news.date,
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                 ],
               ),
