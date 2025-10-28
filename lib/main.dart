@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:budi_rahayu_care_app/home/view/home_page.dart';
+import 'package:budi_rahayu_care_app/contact/view/kontak_kami_page.dart';
 import 'package:budi_rahayu_care_app/about/view/tentang_page.dart';
 
 void main() {
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const HomePage(),
         '/about': (context) => const TentangPage(),
+        '/contact': (context) => const KontakKamiPage(),
       },
     );
   }
