@@ -1,7 +1,7 @@
 // lib/features/kontak_kami/view/kontak_kami_page.dart
 import 'package:flutter/material.dart';
 import 'package:budi_rahayu_care_app/shared/widgets/header.dart';
-import 'package:budi_rahayu_care_app/shared/widgets/footer.dart';
+import 'package:budi_rahayu_care_app/shared/widgets/bottom_nav.dart';
 
 class KontakKamiPage extends StatelessWidget {
   const KontakKamiPage({super.key});
@@ -37,7 +37,6 @@ class KontakKamiPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Alamat
                     const Text(
                       'Gg. Teratai, Kober,\nKec. Purwokerto Barat,\nKabupaten Banyumas, Jawa Tengah 53132',
                       textAlign: TextAlign.center,
@@ -93,6 +92,8 @@ class KontakKamiPage extends StatelessWidget {
                     elevation: 6,
                   ),
                   onPressed: () {
+                    // contoh: membuka WhatsApp
+                    // bisa juga diarahkan ke halaman form kontak jika perlu
                   },
                   child: const Text(
                     'Hubungi Kami',
@@ -107,16 +108,13 @@ class KontakKamiPage extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              // Placeholder Peta (opsional)
-              const SizedBox(height: 24),
-
               // Gambar Peta Lokasi
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.asset(
-                    'lib/shared/assets/images/maps.png', 
+                    'lib/shared/assets/images/maps.png',
                     fit: BoxFit.cover,
                     width: double.infinity,
                     height: 200,
@@ -126,11 +124,13 @@ class KontakKamiPage extends StatelessWidget {
 
               const SizedBox(height: 48),
 
-              Footer(),
             ],
           ),
         ),
       ),
+
+      // Tambahkan Navbar di bagian bawah
+      bottomNavigationBar: const BottomNav(currentIndex: 4),
     );
   }
 }

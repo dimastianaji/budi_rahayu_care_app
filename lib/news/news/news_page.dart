@@ -4,7 +4,6 @@ import 'package:budi_rahayu_care_app/shared/widgets/header.dart';
 import 'package:budi_rahayu_care_app/shared/widgets/footer.dart';
 import 'package:budi_rahayu_care_app/news/models/news_model.dart';
 import 'package:budi_rahayu_care_app/news/widgets/news_card.dart';
-import 'package:budi_rahayu_care_app/news/widgets/news_detail_view.dart';
 import 'package:budi_rahayu_care_app/news/news_repository.dart';
 import 'news_detail_page.dart';
 
