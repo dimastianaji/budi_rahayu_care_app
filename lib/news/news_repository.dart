@@ -9,7 +9,7 @@ class NewsRepository {
         content:
             'Pada tanggal 24 Oktober 2025, telah dilaksanakan kegiatan santunan bagi anak-anak yatim yang diselenggarakan di aula panti...',
         date: '24 Oktober 2025',
-        imageUrl: 'assets/images/news1.jpg',
+        imageUrl: 'lib/shared/assets/images/GambarBerita1.png',
       ),
       NewsModel(
         title: 'Peringatan Hari Kemerdekaan',
@@ -17,7 +17,7 @@ class NewsRepository {
         content:
             'Dalam rangka memperingati Hari Kemerdekaan Indonesia, Panti Asuhan Budi Rahayu mengadakan berbagai lomba seperti balap karung, tarik tambang, dan lain-lain...',
         date: '17 Agustus 2025',
-        imageUrl: 'assets/images/news2.jpg',
+        imageUrl: 'lib/shared/assets/images/GambarBerita1.png',
       ),
       NewsModel(
         title: 'Donasi dari Alumni Sekolah',
@@ -25,7 +25,7 @@ class NewsRepository {
         content:
             'Kami mengucapkan terima kasih kepada para alumni yang telah menyumbangkan dana serta kebutuhan pokok bagi anak-anak di panti...',
         date: '5 September 2025',
-        imageUrl: 'assets/images/news3.jpg',
+        imageUrl: 'lib/shared/assets/images/GambarBerita1.png',
       ),
     ];
   }
