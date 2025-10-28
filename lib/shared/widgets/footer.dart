@@ -1,4 +1,9 @@
+// lib/shared/widgets/footer.dart
 import 'package:flutter/material.dart';
+import 'package:budi_rahayu_care_app/home/view/home_page.dart';
+import 'package:budi_rahayu_care_app/contact/view/kontak_kami_page.dart';
+import 'package:budi_rahayu_care_app/about/view/tentang_page.dart';
+import 'package:budi_rahayu_care_app/news/news/news_page.dart';
 
 class Footer extends StatelessWidget {
   const Footer({super.key});
@@ -6,29 +11,51 @@ class Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFF0D1B66), // warna biru tua
+      color: const Color(0xFF0D1B66), 
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Logo Yayasan
-          Image.asset(
-            'lib/shared/assets/images/logo.png',
-            height: 50,
+          // Logo Yayasan → kembali ke HomePage
+          InkWell(
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const HomePage()),
+              );
+            },
+            child: Image.asset(
+              'lib/shared/assets/images/logo.png',
+              height: 45,
+            ),
           ),
           const SizedBox(height: 24),
 
-          // Menu Navigasi
-          const Column(
+          Column(
             children: [
-              Text('Tentang', style: TextStyle(color: Colors.white, fontSize: 14)),
-              SizedBox(height: 8),
-              Text('Donasi', style: TextStyle(color: Colors.white, fontSize: 14)),
-              SizedBox(height: 8),
-              Text('Berita', style: TextStyle(color: Colors.white, fontSize: 14)),
-              SizedBox(height: 8),
-              Text('Kontak Kami', style: TextStyle(color: Colors.white, fontSize: 14)),
+              _footerLink("Tentang", () {
+                Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const TentangPage()),
+              );
+              }),
+              const SizedBox(height: 8),
+              _footerLink("Donasi", () {}),
+              const SizedBox(height: 8),
+              _footerLink("Berita", () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const NewsPage()),
+                );
+              }),
+              const SizedBox(height: 8),
+              _footerLink("Kontak Kami", () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const KontakKamiPage()),
+                );
+              }),
             ],
           ),
           const SizedBox(height: 24),
@@ -54,7 +81,6 @@ class Footer extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  // aksi ketika ikon Instagram ditekan
                 },
                 child: Image.asset(
                   'lib/shared/assets/icons/instagram.png',
@@ -65,7 +91,6 @@ class Footer extends StatelessWidget {
               const SizedBox(width: 16),
               GestureDetector(
                 onTap: () {
-                  // aksi ketika ikon WhatsApp ditekan
                 },
                 child: Image.asset(
                   'lib/shared/assets/icons/whatsapp.png',
@@ -76,6 +101,17 @@ class Footer extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  // Widget helper untuk link footer
+  Widget _footerLink(String title, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Text(
+        title,
+        style: const TextStyle(color: Colors.white, fontSize: 14),
       ),
     );
   }
