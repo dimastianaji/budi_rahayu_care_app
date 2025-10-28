@@ -3,6 +3,7 @@ import 'package:budi_rahayu_care_app/home/view/home_page.dart';
 import 'package:budi_rahayu_care_app/contact/view/kontak_kami_page.dart';
 import 'package:budi_rahayu_care_app/about/view/tentang_page.dart';
 import 'package:budi_rahayu_care_app/children/view/children_page.dart';
+import 'package:budi_rahayu_care_app/news/news/news_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
         '/about': (context) => const TentangPage(),
         '/contact': (context) => const KontakKamiPage(),
         '/children': (context) => const ChildrenPage(),
+        '/news': (context) => const NewsPage(),
       },
     );
   }
