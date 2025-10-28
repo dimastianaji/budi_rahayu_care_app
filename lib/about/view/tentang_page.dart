@@ -1,7 +1,6 @@
-// lib/features/tentang/view/tentang_page.dart
 import 'package:flutter/material.dart';
 import 'package:budi_rahayu_care_app/shared/widgets/header.dart';
-import 'package:budi_rahayu_care_app/shared/widgets/footer.dart';
+import 'package:budi_rahayu_care_app/shared/widgets/bottom_nav.dart';
 
 class TentangPage extends StatelessWidget {
   const TentangPage({super.key});
@@ -14,7 +13,7 @@ class TentangPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Header(),
+              const Header(),
 
               // Judul Halaman
               Container(
@@ -32,7 +31,7 @@ class TentangPage extends StatelessWidget {
                 ),
               ),
 
-              // Teks Deskripsi 
+              // Teks Deskripsi
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
@@ -91,15 +90,15 @@ class TentangPage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
-              // Gambar 
+              // Gambar
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.asset(
-                    'lib/shared/assets/images/foto_tentang.jpeg', 
+                    'lib/shared/assets/images/foto_tentang.jpeg',
                     width: double.infinity,
                     height: 200,
                     fit: BoxFit.cover,
@@ -107,12 +106,14 @@ class TentangPage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 48),
-
-              Footer(),
+              SizedBox(height: 48),
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNav(
+        currentIndex: 4,
+        onItemTapped: (index) {},
       ),
     );
   }
