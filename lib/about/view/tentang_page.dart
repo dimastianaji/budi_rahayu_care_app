@@ -1,7 +1,6 @@
-// lib/features/tentang/view/tentang_page.dart
 import 'package:flutter/material.dart';
 import 'package:budi_rahayu_care_app/shared/widgets/header.dart';
-import 'package:budi_rahayu_care_app/shared/widgets/footer.dart';
+import 'package:budi_rahayu_care_app/shared/widgets/bottom_nav.dart';
 
 class TentangPage extends StatelessWidget {
   const TentangPage({super.key});
@@ -11,10 +10,11 @@ class TentangPage extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 100), // beri ruang agar tidak tertutup bottom bar
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Header(),
+              const Header(),
 
               // Judul Halaman
               Container(
@@ -32,7 +32,7 @@ class TentangPage extends StatelessWidget {
                 ),
               ),
 
-              // Teks Deskripsi 
+              // Teks Deskripsi
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
@@ -93,13 +93,13 @@ class TentangPage extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              // Gambar 
+              // Gambar
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.asset(
-                    'lib/shared/assets/images/foto_tentang.jpeg', 
+                    'lib/shared/assets/images/foto_tentang.jpeg',
                     width: double.infinity,
                     height: 200,
                     fit: BoxFit.cover,
@@ -107,12 +107,44 @@ class TentangPage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 48),
+              const SizedBox(height: 16),
 
-              Footer(),
+              // Tombol di bawah gambar
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/contact');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xff05049F),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Hubungi Kami',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 48),
             ],
           ),
         ),
+      ),
+
+      // Bottom Navigation Bar
+      bottomNavigationBar: BottomNav(
+        currentIndex: 4,
+        onItemTapped: (index) {
+          // misalnya handle navigasi di sini
+        },
       ),
     );
   }
