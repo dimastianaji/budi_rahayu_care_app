@@ -1,10 +1,10 @@
 // lib/features/berita/view/news_page.dart
 import 'package:flutter/material.dart';
 import 'package:budi_rahayu_care_app/shared/widgets/header.dart';
-import 'package:budi_rahayu_care_app/shared/widgets/footer.dart';
 import 'package:budi_rahayu_care_app/news/models/news_model.dart';
 import 'package:budi_rahayu_care_app/news/widgets/news_card.dart';
 import 'package:budi_rahayu_care_app/news/news_repository.dart';
+import 'package:budi_rahayu_care_app/shared/widgets/bottom_nav.dart';
 import 'news_detail_page.dart';
 
 class NewsPage extends StatelessWidget {
@@ -69,10 +69,13 @@ class NewsPage extends StatelessWidget {
 
               const SizedBox(height: 48),
 
-              Footer(),
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNav(
+        currentIndex: 3,
+        onItemTapped: (index) {},
       ),
     );
   }
