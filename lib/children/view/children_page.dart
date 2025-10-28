@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:budi_rahayu_care_app/shared/widgets/header.dart';
-import 'package:budi_rahayu_care_app/shared/widgets/footer.dart';
 import 'package:budi_rahayu_care_app/children/widgets/child_card.dart';
+import 'package:budi_rahayu_care_app/shared/widgets/bottom_nav.dart';
 
 class ChildrenPage extends StatefulWidget {
   const ChildrenPage({super.key});
@@ -169,10 +169,13 @@ class _ChildrenPageState extends State<ChildrenPage> {
 
               const SizedBox(height: 48),
 
-              Footer(),
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNav(
+        currentIndex: 1,
+        onItemTapped: (index) {},
       ),
     );
   }
