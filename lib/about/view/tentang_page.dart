@@ -10,6 +10,7 @@ class TentangPage extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 100), // beri ruang agar tidak tertutup bottom bar
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -90,7 +91,7 @@ class TentangPage extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
 
               // Gambar
               Padding(
@@ -106,14 +107,44 @@ class TentangPage extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 48),
+              const SizedBox(height: 16),
+
+              // Tombol di bawah gambar
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/contact');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xff05049F),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Hubungi Kami',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 48),
             ],
           ),
         ),
       ),
+
+      // Bottom Navigation Bar
       bottomNavigationBar: BottomNav(
         currentIndex: 4,
-        onItemTapped: (index) {},
+        onItemTapped: (index) {
+          // misalnya handle navigasi di sini
+        },
       ),
     );
   }
