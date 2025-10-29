@@ -134,10 +134,36 @@ class TentangPage extends StatelessWidget {
               ),
 
               const SizedBox(height: 48),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/adminLogin');
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xff05049F), width: 2),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Login Administrator',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Color(0xff05049F),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 48),
             ],
           ),
         ),
       ),
+      
 
       // Bottom Navigation Bar
       bottomNavigationBar: BottomNav(
