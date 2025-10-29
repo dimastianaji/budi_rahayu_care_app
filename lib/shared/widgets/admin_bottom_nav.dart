@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:budi_rahayu_care_app/admin/admin_dashboard_page.dart';
-import 'package:budi_rahayu_care_app/admin/admin_edit_children_page.dart';
-import 'package:budi_rahayu_care_app/admin/admin_edit_news_page.dart';
-import 'package:budi_rahayu_care_app/admin/admin_edit_docs_page.dart';
+import 'package:budi_rahayu_care_app/admin/dashboard/admin_dashboard_page.dart';
+import 'package:budi_rahayu_care_app/admin/children/view/admin_children_page.dart';
+import 'package:budi_rahayu_care_app/admin/news/admin_edit_news_page.dart';
+import 'package:budi_rahayu_care_app/admin/documentation/admin_edit_docs_page.dart';
 
 class AdminBottomNav extends StatefulWidget {
   final int currentIndex;
@@ -48,7 +48,7 @@ class _AdminBottomNavState extends State<AdminBottomNav> {
           case 1:
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const AdminEditChildrenPage()),
+              MaterialPageRoute(builder: (context) => const AdminChildrenPage()),
             );
             break;
           case 2:
@@ -99,7 +99,7 @@ class _AdminBottomNavState extends State<AdminBottomNav> {
         ),
         BottomNavigationBarItem(
           icon: Image.asset(
-            'lib/shared/assets/icons/icon_news.png',
+            'lib/shared/assets/icons/icon_camera.png',
             width: 24,
             height: 24,
             color: _selectedIndex == 3 ? const Color(0xff05049F) : Colors.grey[600],
