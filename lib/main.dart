@@ -5,10 +5,10 @@ import 'package:budi_rahayu_care_app/about/view/tentang_page.dart';
 import 'package:budi_rahayu_care_app/children/view/children_page.dart';
 import 'package:budi_rahayu_care_app/news/news/news_page.dart';
 import 'package:budi_rahayu_care_app/admin/admin_login_page.dart';
-import 'package:budi_rahayu_care_app/admin/admin_dashboard_page.dart';
-import 'package:budi_rahayu_care_app/admin/admin_edit_children_page.dart';
-import 'package:budi_rahayu_care_app/admin/admin_edit_news_page.dart'; 
-import 'package:budi_rahayu_care_app/admin/admin_edit_docs_page.dart';
+import 'package:budi_rahayu_care_app/admin/dashboard/admin_dashboard_page.dart';
+import 'package:budi_rahayu_care_app/admin/children/view/admin_children_page.dart';
+import 'package:budi_rahayu_care_app/admin/news/admin_edit_news_page.dart'; 
+import 'package:budi_rahayu_care_app/admin/documentation/admin_edit_docs_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         '/news': (context) => const NewsPage(),
         '/adminLogin': (context) => const AdminLoginPage(),
         '/adminDashboard': (context) => const AdminDashboardPage(),
-        '/adminEditChildren': (context) => const AdminEditChildrenPage(),
+        '/adminEditChildren': (context) => const AdminChildrenPage(),
         '/adminEditNews': (context) => const AdminEditNewsPage(),
         '/adminEditDocs': (context) => const AdminEditDocsPage(),
       },
