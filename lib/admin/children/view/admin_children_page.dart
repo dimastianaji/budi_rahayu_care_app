@@ -250,28 +250,38 @@ class _AdminChildrenPageState extends State<AdminChildrenPage> {
                               const SizedBox(height: 12),
                               const Text("Tambahkan Foto Anak*"),
                               const SizedBox(height: 4),
-                              GestureDetector(
+                              InkWell(
                                 onTap: _pickImage,
                                 child: Container(
                                   width: double.infinity,
-                                  height: 150,
+                                  padding: const EdgeInsets.symmetric(vertical: 10),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(6),
                                     color: Colors.grey[300],
-                                    image: _selectedImage != null
-                                        ? DecorationImage(
-                                            image: FileImage(_selectedImage!),
-                                            fit: BoxFit.cover,
-                                          )
-                                        : null,
                                   ),
-                                  child: _selectedImage == null
-                                      ? const Center(
-                                          child: Text("Browse"),
-                                        )
-                                      : null,
+                                  child: Center(
+                                    child: Text(
+                                      _selectedImage == null ? "Browse" : "Gambar dipilih ✅",
+                                      style: TextStyle(
+                                        color: Colors.indigo.shade900,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
+                              const SizedBox(height: 8),
+                              if (_selectedImage != null)
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.file(
+                                    _selectedImage!,
+                                    height: 150,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+
                               const SizedBox(height: 12),
                               ElevatedButton(
                                 style: ElevatedButton.styleFrom(

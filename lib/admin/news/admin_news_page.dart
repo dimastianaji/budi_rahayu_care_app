@@ -225,7 +225,7 @@ class _AdminNewsPageState extends State<AdminNewsPage> {
                         child: AdminNewsCard(
                           title: newsList[i]['title']!,
                           content: newsList[i]['content']!,
-                          imageBytes: newsList[i]['image'], // kirim ke card
+                          imageBytes: newsList[i]['image'], 
                           onSave: (newTitle, newContent) {
                             setState(() {
                               newsList[i]['title'] = newTitle;
