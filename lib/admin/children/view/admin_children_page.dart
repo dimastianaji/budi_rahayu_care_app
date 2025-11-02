@@ -14,7 +14,7 @@ class AdminChildrenPage extends StatefulWidget {
 }
 
 class _AdminChildrenPageState extends State<AdminChildrenPage> {
-  bool _isAdding = false;
+  bool showAddForm = false;
 
   final List<ChildModel> _children = [
     ChildModel(
@@ -33,7 +33,6 @@ class _AdminChildrenPageState extends State<AdminChildrenPage> {
   final _descController = TextEditingController();
   File? _selectedImage;
 
-  // 📸 Pilih foto anak
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -44,31 +43,32 @@ class _AdminChildrenPageState extends State<AdminChildrenPage> {
     }
   }
 
-  // ➕ Tambah anak
   void _addChild() {
-    if (_nameController.text.isEmpty || _descController.text.isEmpty) return;
-    setState(() {
-      _children.add(ChildModel(
-        name: _nameController.text,
-        description: _descController.text,
-        photoUrl: _selectedImage?.path ??
-            'lib/shared/assets/images/child_placeholder.jpg',
-      ));
-      _isAdding = false;
-      _nameController.clear();
-      _descController.clear();
-      _selectedImage = null;
-    });
+    if (_nameController.text.isNotEmpty && _descController.text.isNotEmpty) {
+      setState(() {
+        _children.insert(
+          0,
+          ChildModel(
+            name: _nameController.text,
+            description: _descController.text,
+            photoUrl: _selectedImage?.path ??
+                'lib/shared/assets/images/child_placeholder.jpg',
+          ),
+        );
+        _nameController.clear();
+        _descController.clear();
+        _selectedImage = null;
+        showAddForm = false;
+      });
+    }
   }
 
-  // 🗑️ Hapus anak
   void _deleteChild(int index) {
     setState(() {
       _children.removeAt(index);
     });
   }
 
-  // ✏️ Edit anak
   void _editChild(int index) {
     final child = _children[index];
     final nameController = TextEditingController(text: child.name);
@@ -142,6 +142,9 @@ class _AdminChildrenPageState extends State<AdminChildrenPage> {
             child: const Text('Batal'),
           ),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.indigo.shade900,
+            ),
             onPressed: () {
               setState(() {
                 _children[index] = ChildModel(
@@ -162,164 +165,160 @@ class _AdminChildrenPageState extends State<AdminChildrenPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8),
-      body: SafeArea(
-        child: Column(
-          children: [
-            const Header(),
-            Expanded(
+      bottomNavigationBar: const AdminBottomNav(currentIndex: 1),
+      body: Column(
+        children: [
+          const Header(),
+          Expanded(
+            child: SafeArea(
+              top: false,
               child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 20),
-                      const Center(
-                        child: Text(
-                          'Data Anak',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 8),
+                    const Text(
+                      "Data Anak",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // 🔽 Tombol Tambah Data Anak
+                    Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            showAddForm = !showAddForm;
+                          });
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 12),
+                          child: Center(
+                            child: Text(
+                              "Tambah Data Anak",
+                              style: TextStyle(
+                                color: Colors.indigo.shade900,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                    ),
 
-                      // 🔽 Tambah Data Anak
-                      InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: () {
-                          setState(() => _isAdding = !_isAdding);
-                        },
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          width: double.infinity,
+                    const SizedBox(height: 12),
+
+                    // 🧒 Form Tambah Anak
+                    if (showAddForm)
+                      Card(
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Padding(
                           padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: const [
-                              BoxShadow(color: Colors.black12, blurRadius: 6),
-                            ],
-                          ),
-                          child: _isAdding
-                              ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      'Tambah Data Anak',
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text("Nama Anak*"),
+                              const SizedBox(height: 4),
+                              TextField(
+                                controller: _nameController,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(6)),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              const Text("Deskripsi Anak*"),
+                              const SizedBox(height: 4),
+                              TextField(
+                                controller: _descController,
+                                maxLines: 4,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(6)),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              const Text("Tambahkan Foto Anak*"),
+                              const SizedBox(height: 4),
+                              InkWell(
+                                onTap: _pickImage,
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(6),
+                                    color: Colors.grey[300],
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      _selectedImage == null ? "Browse" : "Gambar dipilih ✅",
                                       style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    GestureDetector(
-                                      onTap: _pickImage,
-                                      child: Container(
-                                        height: 150,
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey[200],
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          image: _selectedImage != null
-                                              ? DecorationImage(
-                                                  image: FileImage(
-                                                      _selectedImage!),
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : null,
-                                        ),
-                                        child: _selectedImage == null
-                                            ? const Center(
-                                                child: Text(
-                                                  'Pilih Foto Anak',
-                                                  style: TextStyle(
-                                                    color: Colors.black54,
-                                                  ),
-                                                ),
-                                              )
-                                            : null,
+                                        color: Colors.indigo.shade900,
+                                        fontWeight: FontWeight.w600,
                                       ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    TextField(
-                                      controller: _nameController,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Nama*',
-                                        border: OutlineInputBorder(),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    TextField(
-                                      controller: _descController,
-                                      maxLines: 3,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Deskripsi*',
-                                        border: OutlineInputBorder(),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: ElevatedButton(
-                                        onPressed: _addChild,
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.blue[900],
-                                          foregroundColor: Colors.white,
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 14),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                        ),
-                                        child: const Text(
-                                          'Tambah Data Anak',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : const Center(
-                                  child: Text(
-                                    'Tambah Data Anak',
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
+                              ),
+                              const SizedBox(height: 8),
+                              if (_selectedImage != null)
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.file(
+                                    _selectedImage!,
+                                    height: 150,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+
+                              const SizedBox(height: 12),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.indigo.shade900,
+                                  minimumSize:
+                                      const Size(double.infinity, 40),
+                                ),
+                                onPressed: _addChild,
+                                child: const Text(
+                                  "Tambah Data Anak",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 16),
 
-                      // 🧒 Daftar Anak
-                      ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: _children.length,
-                        itemBuilder: (context, index) {
-                          final child = _children[index];
-                          return AdminChildCard(
-                            childData: child,
-                            onDelete: () => _deleteChild(index),
-                            onEdit: () => _editChild(index),
-                          );
-                        },
+                    const SizedBox(height: 16),
+
+                    // 🔽 Daftar Anak
+                    for (var i = 0; i < _children.length; i++)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: AdminChildCard(
+                          childData: _children[i],
+                          onDelete: () => _deleteChild(i),
+                          onEdit: () => _editChild(i),
+                        ),
                       ),
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      bottomNavigationBar: const AdminBottomNav(currentIndex: 1),
     );
   }
 }
