@@ -8,7 +8,7 @@ import 'package:budi_rahayu_care_app/admin/admin_login_page.dart';
 import 'package:budi_rahayu_care_app/admin/dashboard/admin_dashboard_page.dart';
 import 'package:budi_rahayu_care_app/admin/children/view/admin_children_page.dart';
 import 'package:budi_rahayu_care_app/admin/news/admin_news_page.dart'; 
-import 'package:budi_rahayu_care_app/admin/documentation/admin_edit_docs_page.dart';
+import 'package:budi_rahayu_care_app/admin/documentation/admin_docs_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         '/adminDashboard': (context) => const AdminDashboardPage(),
         '/adminEditChildren': (context) => const AdminChildrenPage(),
         '/adminEditNews': (context) => const AdminNewsPage(),
-        '/adminEditDocs': (context) => const AdminEditDocsPage(),
+        '/adminEditDocs': (context) => const AdminDocsPage(),
       },
     );
   }
