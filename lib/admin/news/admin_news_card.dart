@@ -5,14 +5,18 @@ class AdminNewsCard extends StatefulWidget {
   final String title;
   final String content;
   final Uint8List? imageBytes;
+  final String? imageUrl;
   final void Function(String newTitle, String newContent) onSave;
+  final VoidCallback? onDelete;
 
   const AdminNewsCard({
     Key? key,
     required this.title,
     required this.content,
-    required this.imageBytes,
+    this.imageBytes,
+    this.imageUrl,
     required this.onSave,
+    this.onDelete,
   }) : super(key: key);
 
   @override
@@ -85,7 +89,7 @@ class _AdminNewsCardState extends State<AdminNewsCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // HEADER: Judul dan ikon pensil (ikon selalu muncul)
+          // HEADER: Judul + tombol edit + hapus
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -98,22 +102,32 @@ class _AdminNewsCardState extends State<AdminNewsCard> {
                   ),
                 ),
               ),
-
-              // Ikon pensil selalu tampil dengan warna indigo
               IconButton(
-                icon: const Icon(
-                  Icons.edit,
-                  color: Colors.indigo,
-                ),
+                icon: const Icon(Icons.edit, color: Colors.indigo),
                 onPressed: _toggleEditMode,
               ),
+              if (widget.onDelete != null)
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.redAccent),
+                  onPressed: widget.onDelete,
+                ),
             ],
           ),
 
           const SizedBox(height: 8),
 
-          // Gambar berita (selalu tampil di luar mode edit)
-          if (widget.imageBytes != null)
+          // Gambar: tampil dari URL Firebase atau dari bytes lokal
+          if (widget.imageUrl != null)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                widget.imageUrl!,
+                height: 150,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            )
+          else if (widget.imageBytes != null)
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.memory(
@@ -126,7 +140,7 @@ class _AdminNewsCardState extends State<AdminNewsCard> {
 
           const SizedBox(height: 10),
 
-          // Mode edit aktif → tampilkan input judul & konten
+          // Mode edit
           if (isEditing) ...[
             const Text("Judul Berita"),
             const SizedBox(height: 6),
@@ -164,7 +178,7 @@ class _AdminNewsCardState extends State<AdminNewsCard> {
             ),
           ],
 
-          // Mode normal → tampilkan preview isi berita
+          // Mode normal
           if (!isEditing)
             Text(
               widget.content,

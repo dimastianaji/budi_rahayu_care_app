@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'admin_news_card.dart';
 import 'package:budi_rahayu_care_app/shared/widgets/header.dart';
 import 'package:budi_rahayu_care_app/shared/widgets/admin_bottom_nav.dart';
@@ -14,33 +16,15 @@ class AdminNewsPage extends StatefulWidget {
 
 class _AdminNewsPageState extends State<AdminNewsPage> {
   bool showAddForm = false;
-  Uint8List? _imageBytes; // Menyimpan data gambar
+  Uint8List? _imageBytes;
 
   final ImagePicker _picker = ImagePicker();
-
-  List<Map<String, dynamic>> newsList = [
-    {
-      'title': 'Judul Berita',
-      'content':
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.',
-      'image': null,
-    },
-    {
-      'title': 'Judul Berita',
-      'content':
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.',
-      'image': null,
-    },
-  ];
-
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
 
-  /// Fungsi untuk memilih gambar dari galeri
   Future<void> _pickImage() async {
     final XFile? pickedFile =
         await _picker.pickImage(source: ImageSource.gallery);
-
     if (pickedFile != null) {
       final bytes = await pickedFile.readAsBytes();
       setState(() {
@@ -49,21 +33,65 @@ class _AdminNewsPageState extends State<AdminNewsPage> {
     }
   }
 
-  /// Fungsi menambahkan berita
-  void _addNews() {
+  Future<void> _addNews() async {
     if (_titleController.text.isNotEmpty &&
-        _contentController.text.isNotEmpty) {
-      setState(() {
-        newsList.insert(0, {
+        _contentController.text.isNotEmpty &&
+        _imageBytes != null) {
+      try {
+        // Upload gambar ke Firebase Storage
+        String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+        Reference storageRef =
+            FirebaseStorage.instance.ref().child('news_images/$fileName.jpg');
+
+        UploadTask uploadTask = storageRef.putData(_imageBytes!);
+        TaskSnapshot snapshot = await uploadTask;
+        String imageUrl = await snapshot.ref.getDownloadURL();
+
+        // Simpan data ke Firestore
+        await FirebaseFirestore.instance.collection('news').add({
           'title': _titleController.text,
           'content': _contentController.text,
-          'image': _imageBytes,
+          'imageUrl': imageUrl,
+          'date': Timestamp.now(),
         });
-        _titleController.clear();
-        _contentController.clear();
-        _imageBytes = null;
-        showAddForm = false;
-      });
+
+        setState(() {
+          _titleController.clear();
+          _contentController.clear();
+          _imageBytes = null;
+          showAddForm = false;
+        });
+
+        print('Mulai upload berita...');
+print('Berita berhasil disimpan ke Firestore');
+
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Berita berhasil ditambahkan')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menambahkan berita: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _deleteNews(String docId, String imageUrl) async {
+    try {
+      // Hapus gambar dari Storage
+      await FirebaseStorage.instance.refFromURL(imageUrl).delete();
+
+      // Hapus dokumen dari Firestore
+      await FirebaseFirestore.instance.collection('news').doc(docId).delete();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Berita berhasil dihapus')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal menghapus berita: $e')),
+      );
     }
   }
 
@@ -158,8 +186,6 @@ class _AdminNewsPageState extends State<AdminNewsPage> {
                               const SizedBox(height: 12),
                               const Text("Tambahkan Foto Berita*"),
                               const SizedBox(height: 4),
-
-                              // Tombol pilih gambar
                               InkWell(
                                 onTap: _pickImage,
                                 child: Container(
@@ -183,10 +209,7 @@ class _AdminNewsPageState extends State<AdminNewsPage> {
                                   ),
                                 ),
                               ),
-
                               const SizedBox(height: 8),
-
-                              // Preview gambar (jika ada)
                               if (_imageBytes != null)
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
@@ -197,7 +220,6 @@ class _AdminNewsPageState extends State<AdminNewsPage> {
                                     fit: BoxFit.cover,
                                   ),
                                 ),
-
                               const SizedBox(height: 16),
                               ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -218,22 +240,54 @@ class _AdminNewsPageState extends State<AdminNewsPage> {
 
                     const SizedBox(height: 16),
 
-                    // List Berita
-                    for (var i = 0; i < newsList.length; i++)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: AdminNewsCard(
-                          title: newsList[i]['title']!,
-                          content: newsList[i]['content']!,
-                          imageBytes: newsList[i]['image'], 
-                          onSave: (newTitle, newContent) {
-                            setState(() {
-                              newsList[i]['title'] = newTitle;
-                              newsList[i]['content'] = newContent;
-                            });
-                          },
-                        ),
-                      ),
+                    // List Berita dari Firestore
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('news')
+                          .orderBy('date', descending: true)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+
+                        if (!snapshot.hasData ||
+                            snapshot.data!.docs.isEmpty) {
+                          return const Text("Belum ada berita");
+                        }
+
+                        final beritaList = snapshot.data!.docs;
+
+                        return Column(
+                          children: beritaList.map((doc) {
+                            final data = doc.data() as Map<String, dynamic>;
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: AdminNewsCard(
+                                title: data['title'] ?? '',
+                                content: data['content'] ?? '',
+                                imageUrl: data['imageUrl'] ?? '',
+                                onSave: (newTitle, newContent) async {
+                                  await FirebaseFirestore.instance
+                                      .collection('news')
+                                      .doc(doc.id)
+                                      .update({
+                                    'title': newTitle,
+                                    'content': newContent,
+                                  });
+                                },
+                                onDelete: () async {
+                                  await _deleteNews(
+                                      doc.id, data['imageUrl'] ?? '');
+                                },
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),

@@ -42,7 +42,7 @@ class NewsCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    news.date,
+                    "${news.date.day}/${news.date.month}/${news.date.year}",
                     style: const TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                 ],
