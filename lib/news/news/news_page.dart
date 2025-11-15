@@ -1,8 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:budi_rahayu_care_app/shared/widgets/header.dart';
 import 'package:budi_rahayu_care_app/shared/widgets/bottom_nav.dart';
 import 'news_detail_page.dart';
+
+// MODEL SEDERHANA TANPA FIREBASE
+class LocalNews {
+  final String title;
+  final String content;
+  final String imageUrl;
+
+  LocalNews({
+    required this.title,
+    required this.content,
+    required this.imageUrl,
+  });
+}
+
+// SIMULASI PENGAMBILAN DATA BERITA (PENGGANTI FIRESTORE)
+Future<List<LocalNews>> fetchNews() async {
+  await Future.delayed(const Duration(seconds: 1)); // simulasi loading
+
+  return [
+    LocalNews(
+      title: "Pembangunan Klinik Baru Telah Dimulai",
+      content: "Proyek pembangunan gedung klinik baru resmi dimulai hari ini...",
+      imageUrl: "https://picsum.photos/400/300?random=1",
+    ),
+    LocalNews(
+      title: "Program Bantuan Kesehatan 2025",
+      content:
+          "Pemerintah meluncurkan program bantuan kesehatan bagi masyarakat...",
+      imageUrl: "https://picsum.photos/400/300?random=2",
+    ),
+    LocalNews(
+      title: "Layanan Vaksinasi Gratis",
+      content:
+          "Layanan vaksinasi gratis kembali dibuka untuk umum minggu depan...",
+      imageUrl: "https://picsum.photos/400/300?random=3",
+    ),
+  ];
+}
 
 class NewsPage extends StatelessWidget {
   const NewsPage({super.key});
@@ -34,14 +71,11 @@ class NewsPage extends StatelessWidget {
                 ),
               ),
 
-              // Daftar Berita dari Firestore
+              // DAFTAR BERITA (TANPA FIREBASE)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('news')
-                      .orderBy('date', descending: true)
-                      .snapshots(),
+                child: FutureBuilder<List<LocalNews>>(
+                  future: fetchNews(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
@@ -52,7 +86,7 @@ class NewsPage extends StatelessWidget {
                       );
                     }
 
-                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return const Padding(
                         padding: EdgeInsets.only(top: 40),
                         child: Center(
@@ -64,12 +98,12 @@ class NewsPage extends StatelessWidget {
                       );
                     }
 
-                    final newsDocs = snapshot.data!.docs;
+                    final newsList = snapshot.data!;
 
                     return GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: newsDocs.length,
+                      itemCount: newsList.length,
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 16,
@@ -77,11 +111,7 @@ class NewsPage extends StatelessWidget {
                         childAspectRatio: 0.75,
                       ),
                       itemBuilder: (context, index) {
-                        final data = newsDocs[index].data() as Map<String, dynamic>;
-
-                        final String title = data['title'] ?? '';
-                        final String content = data['content'] ?? '';
-                        final String? imageUrl = data['imageUrl'];
+                        final news = newsList[index];
 
                         return GestureDetector(
                           onTap: () {
@@ -89,9 +119,9 @@ class NewsPage extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (_) => NewsDetailPage(
-                                  title: title,
-                                  content: content,
-                                  imageUrl: imageUrl,
+                                  title: news.title,
+                                  content: news.content,
+                                  imageUrl: news.imageUrl,
                                 ),
                               ),
                             );
@@ -111,20 +141,20 @@ class NewsPage extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (imageUrl != null && imageUrl.isNotEmpty)
-                                  ClipRRect(
-                                    borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                                    child: Image.network(
-                                      imageUrl,
-                                      height: 120,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
-                                    ),
+                                ClipRRect(
+                                  borderRadius:
+                                      const BorderRadius.vertical(top: Radius.circular(12)),
+                                  child: Image.network(
+                                    news.imageUrl,
+                                    height: 120,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
                                   ),
+                                ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
-                                    title,
+                                    news.title,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
@@ -136,7 +166,7 @@ class NewsPage extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 8),
                                   child: Text(
-                                    content,
+                                    news.content,
                                     maxLines: 3,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(

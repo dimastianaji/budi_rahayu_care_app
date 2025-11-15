@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class NewsModel {
   final String title;
   final String content;
@@ -13,15 +11,12 @@ class NewsModel {
     required this.date,
   });
 
-  factory NewsModel.fromFirestore(Map<String, dynamic> data) {
-    Timestamp timestamp = data['date'] ?? Timestamp.now(); // Default jika null
-    DateTime date = timestamp.toDate();
-    
+  factory NewsModel.fromMap(Map<String, dynamic> data) {
     return NewsModel(
       title: data['title'] ?? '',
       content: data['content'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
-      date: date,
+      date: DateTime.parse(data['date']),
     );
   }
 
@@ -30,7 +25,7 @@ class NewsModel {
       'title': title,
       'content': content,
       'imageUrl': imageUrl,
-      'date': Timestamp.fromDate(date), // Simpan kembali sebagai Timestamp
+      'date': date.toIso8601String(),
     };
   }
 }

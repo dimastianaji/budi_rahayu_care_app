@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'firebase_options.dart';
 import 'package:budi_rahayu_care_app/home/view/home_page.dart';
 import 'package:budi_rahayu_care_app/contact/view/kontak_kami_page.dart';
 import 'package:budi_rahayu_care_app/about/view/tentang_page.dart';
@@ -16,9 +14,6 @@ import 'package:budi_rahayu_care_app/admin/documentation/admin_edit_docs_page.da
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
   runApp(const MyApp());
 }
 
