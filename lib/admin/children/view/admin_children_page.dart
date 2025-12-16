@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../model/child_model.dart';
 import 'admin_child_card.dart';
-import 'package:budi_rahayu_care_app/shared/widgets/header.dart';
-import 'package:budi_rahayu_care_app/shared/widgets/admin_bottom_nav.dart';
 
 class AdminChildrenPage extends StatefulWidget {
   const AdminChildrenPage({super.key});
@@ -104,7 +102,8 @@ class _AdminChildrenPageState extends State<AdminChildrenPage> {
                           ? FileImage(editedImage!)
                           : (child.photoUrl.startsWith('lib/')
                               ? AssetImage(child.photoUrl)
-                              : FileImage(File(child.photoUrl))) as ImageProvider,
+                              : FileImage(File(child.photoUrl)))
+                              as ImageProvider,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -164,160 +163,151 @@ class _AdminChildrenPageState extends State<AdminChildrenPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: const AdminBottomNav(currentIndex: 1),
-      body: Column(
-        children: [
-          const Header(),
-          Expanded(
-            child: SafeArea(
-              top: false,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 8),
-                    const Text(
-                      "Data Anak",
+    return SafeArea(
+      top: false,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            const SizedBox(height: 8),
+            const Text(
+              "Data Anak",
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // ➕ Tambah Data Anak
+            Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    showAddForm = !showAddForm;
+                  });
+                },
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                  child: Center(
+                    child: Text(
+                      "Tambah Data Anak",
                       style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: Colors.black87,
+                        color: Colors.indigo.shade900,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                  ),
+                ),
+              ),
+            ),
 
-                    // 🔽 Tombol Tambah Data Anak
-                    Card(
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            showAddForm = !showAddForm;
-                          });
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 12),
+            const SizedBox(height: 12),
+
+            // 🧒 Form Tambah Anak
+            if (showAddForm)
+              Card(
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("Nama Anak*"),
+                      const SizedBox(height: 4),
+                      TextField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6)),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text("Deskripsi Anak*"),
+                      const SizedBox(height: 4),
+                      TextField(
+                        controller: _descController,
+                        maxLines: 4,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6)),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text("Tambahkan Foto Anak*"),
+                      const SizedBox(height: 4),
+                      InkWell(
+                        onTap: _pickImage,
+                        child: Container(
+                          width: double.infinity,
+                          padding:
+                              const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6),
+                            color: Colors.grey[300],
+                          ),
                           child: Center(
                             child: Text(
-                              "Tambah Data Anak",
+                              _selectedImage == null
+                                  ? "Browse"
+                                  : "Gambar dipilih ✅",
                               style: TextStyle(
                                 color: Colors.indigo.shade900,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // 🧒 Form Tambah Anak
-                    if (showAddForm)
-                      Card(
-                        elevation: 3,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text("Nama Anak*"),
-                              const SizedBox(height: 4),
-                              TextField(
-                                controller: _nameController,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(6)),
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              const Text("Deskripsi Anak*"),
-                              const SizedBox(height: 4),
-                              TextField(
-                                controller: _descController,
-                                maxLines: 4,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(6)),
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              const Text("Tambahkan Foto Anak*"),
-                              const SizedBox(height: 4),
-                              InkWell(
-                                onTap: _pickImage,
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(vertical: 10),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6),
-                                    color: Colors.grey[300],
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      _selectedImage == null ? "Browse" : "Gambar dipilih ✅",
-                                      style: TextStyle(
-                                        color: Colors.indigo.shade900,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              if (_selectedImage != null)
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.file(
-                                    _selectedImage!,
-                                    height: 150,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-
-                              const SizedBox(height: 12),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.indigo.shade900,
-                                  minimumSize:
-                                      const Size(double.infinity, 40),
-                                ),
-                                onPressed: _addChild,
-                                child: const Text(
-                                  "Tambah Data Anak",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            ],
+                      const SizedBox(height: 8),
+                      if (_selectedImage != null)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(
+                            _selectedImage!,
+                            height: 150,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
                           ),
                         ),
-                      ),
-
-                    const SizedBox(height: 16),
-
-                    // 🔽 Daftar Anak
-                    for (var i = 0; i < _children.length; i++)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: AdminChildCard(
-                          childData: _children[i],
-                          onDelete: () => _deleteChild(i),
-                          onEdit: () => _editChild(i),
+                      const SizedBox(height: 12),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.indigo.shade900,
+                          minimumSize: const Size(double.infinity, 40),
+                        ),
+                        onPressed: _addChild,
+                        child: const Text(
+                          "Tambah Data Anak",
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ),
-        ],
+
+            const SizedBox(height: 16),
+
+            // 📋 Daftar Anak
+            for (var i = 0; i < _children.length; i++)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: AdminChildCard(
+                  childData: _children[i],
+                  onDelete: () => _deleteChild(i),
+                  onEdit: () => _editChild(i),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

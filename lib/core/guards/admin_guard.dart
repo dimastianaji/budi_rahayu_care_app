@@ -3,43 +3,63 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AdminGuard extends StatelessWidget {
   final Widget child;
-
   const AdminGuard({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    final user = Supabase.instance.client.auth.currentUser;
-
-    if (user == null) {
-      Future.microtask(() {
-        Navigator.pushReplacementNamed(context, '/login');
-      });
-      return const SizedBox();
-    }
-
-    return FutureBuilder(
-      future: Supabase.instance.client
-          .from('profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single(),
+    return StreamBuilder<AuthState>(
+      stream: Supabase.instance.client.auth.onAuthStateChange,
       builder: (context, snapshot) {
+        // Auth belum siap
         if (!snapshot.hasData) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
 
-        final role = snapshot.data!['role'];
+        final session = snapshot.data!.session;
+        final user = session?.user;
 
-        if (role != 'admin') {
-          Future.microtask(() {
-            Navigator.pushReplacementNamed(context, '/unauthorized');
+        // Belum login
+        if (user == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushReplacementNamed(context, '/adminLogin');
           });
           return const SizedBox();
         }
 
-        return child;
+        // Sudah login → cek role
+        return FutureBuilder<Map<String, dynamic>?>(
+          future: Supabase.instance.client
+              .from('profiles')
+              .select('role')
+              .eq('id', user.id)
+              .maybeSingle(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            if (!snapshot.hasData || snapshot.data == null) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.pushReplacementNamed(context, '/adminLogin');
+              });
+              return const SizedBox();
+            }
+
+            if (snapshot.data!['role'] != 'admin') {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.pushReplacementNamed(context, '/');
+              });
+              return const SizedBox();
+            }
+
+            // ✅ ADMIN VALID
+            return child;
+          },
+        );
       },
     );
   }

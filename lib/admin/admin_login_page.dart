@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:budi_rahayu_care_app/core/supabase/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-
-
 class AdminLoginPage extends StatefulWidget {
   const AdminLoginPage({super.key});
 
@@ -16,47 +14,75 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _isObscure = true;
+  bool _isLoading = false;
 
   final AuthService _authService = AuthService();
 
-void _handleLogin() async {
-  final email = _usernameController.text.trim();
-  final password = _passwordController.text.trim();
+  Future<void> _handleLogin() async {
+    if (_isLoading) return;
 
-  if (email.isEmpty || password.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Email dan password wajib diisi')),
-    );
-    return;
+    final email = _usernameController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      _showSnackBar('Email dan password wajib diisi');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      await _authService.signInAdmin(
+        email: email,
+        password: password,
+      );
+
+      if (!mounted) return;
+
+      _showSnackBar('Login berhasil');
+
+      // Delay kecil agar snackbar tidak bentrok dengan navigator
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      if (!mounted) return;
+
+      Navigator.pushReplacementNamed(context, '/admin');
+
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      _showSnackBar(e.message);
+    } catch (e, s) {
+      debugPrint('LOGIN ERROR: $e');
+      debugPrint('$s');
+
+      if (!mounted) return;
+      _showSnackBar('Terjadi kesalahan');
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
-  try {
-    await _authService.signInAdmin(
-      email: email,
-      password: password,
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Login berhasil')),
-    );
-
-    Navigator.pushReplacementNamed(context, '/adminDashboard');
-  } on AuthException catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(e.message)),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Terjadi kesalahan')),
-    );
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text(message)),
+      );
   }
-}
 
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xff05049F), 
+      backgroundColor: const Color(0xff05049F),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -68,15 +94,13 @@ void _handleLogin() async {
                 alignment: Alignment.topLeft,
                 child: IconButton(
                   icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+                  onPressed: () => Navigator.pop(context),
                 ),
               ),
 
               const SizedBox(height: 32),
 
-              // Logo dan nama yayasan
+              // Logo
               Column(
                 children: [
                   Image.asset(
@@ -99,15 +123,16 @@ void _handleLogin() async {
 
               const SizedBox(height: 48),
 
-              // Form Login
+              // Email
               TextField(
                 controller: _usernameController,
+                keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   hintText: 'Email*',
                   filled: true,
                   fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 16, horizontal: 16),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide.none,
@@ -117,6 +142,7 @@ void _handleLogin() async {
 
               const SizedBox(height: 16),
 
+              // Password
               TextField(
                 controller: _passwordController,
                 obscureText: _isObscure,
@@ -124,21 +150,21 @@ void _handleLogin() async {
                   hintText: 'Password*',
                   filled: true,
                   fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 16, horizontal: 16),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide.none,
                   ),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _isObscure ? Icons.visibility_off : Icons.visibility,
+                      _isObscure
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                       color: Colors.grey,
                     ),
                     onPressed: () {
-                      setState(() {
-                        _isObscure = !_isObscure;
-                      });
+                      setState(() => _isObscure = !_isObscure);
                     },
                   ),
                 ),
@@ -146,11 +172,11 @@ void _handleLogin() async {
 
               const SizedBox(height: 24),
 
-              // Tombol Login
+              // Button Login
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _handleLogin,
+                  onPressed: _isLoading ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -158,14 +184,23 @@ void _handleLogin() async {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Login',
-                    style: TextStyle(
-                      color: Color(0xff05049F),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Color(0xff05049F),
+                          ),
+                        )
+                      : const Text(
+                          'Login',
+                          style: TextStyle(
+                            color: Color(0xff05049F),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
                 ),
               ),
             ],
