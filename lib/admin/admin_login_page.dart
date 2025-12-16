@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:budi_rahayu_care_app/core/supabase/auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+
 
 class AdminLoginPage extends StatefulWidget {
   const AdminLoginPage({super.key});
@@ -13,23 +17,41 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
   bool _isObscure = true;
 
-  void _handleLogin() {
-    final username = _usernameController.text.trim();
-    final password = _passwordController.text.trim();
+  final AuthService _authService = AuthService();
 
-    // Contoh validasi sederhana
-    if (username == 'admin' && password == '12345') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login berhasil!')),
-      );
-      // Arahkan ke halaman dashboard admin misalnya:
-      Navigator.pushReplacementNamed(context, '/adminDashboard');
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Username atau password salah')),
-      );
-    }
+void _handleLogin() async {
+  final email = _usernameController.text.trim();
+  final password = _passwordController.text.trim();
+
+  if (email.isEmpty || password.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Email dan password wajib diisi')),
+    );
+    return;
   }
+
+  try {
+    await _authService.signInAdmin(
+      email: email,
+      password: password,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Login berhasil')),
+    );
+
+    Navigator.pushReplacementNamed(context, '/adminDashboard');
+  } on AuthException catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(e.message)),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Terjadi kesalahan')),
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +103,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
               TextField(
                 controller: _usernameController,
                 decoration: InputDecoration(
-                  hintText: 'Username*',
+                  hintText: 'Email*',
                   filled: true,
                   fillColor: Colors.white,
                   contentPadding: const EdgeInsets.symmetric(
