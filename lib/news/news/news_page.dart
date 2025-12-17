@@ -1,44 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:budi_rahayu_care_app/shared/widgets/header.dart';
 import 'package:budi_rahayu_care_app/shared/widgets/bottom_nav.dart';
+import 'package:budi_rahayu_care_app/core/services/news_service.dart'; // ✅ Service kamu
 import 'news_detail_page.dart';
 
-// MODEL SEDERHANA TANPA FIREBASE
-class LocalNews {
+// MODEL BERITA (sesuaikan dengan struktur tabel Supabase)
+class News {
+  final String id;
   final String title;
   final String content;
-  final String imageUrl;
+  final String? imageUrl;
+  final DateTime createdAt;
 
-  LocalNews({
+  News({
+    required this.id,
     required this.title,
     required this.content,
-    required this.imageUrl,
+    this.imageUrl,
+    required this.createdAt,
   });
+
+  factory News.fromJson(Map<String, dynamic> json) {
+    return News(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      content: json['content'] as String,
+      imageUrl: json['image_url'] as String?,
+      createdAt: DateTime.parse(json['created_at'] as String),
+    );
+  }
 }
 
-// SIMULASI PENGAMBILAN DATA BERITA (PENGGANTI FIRESTORE)
-Future<List<LocalNews>> fetchNews() async {
-  await Future.delayed(const Duration(seconds: 1)); // simulasi loading
-
-  return [
-    LocalNews(
-      title: "Pembangunan Klinik Baru Telah Dimulai",
-      content: "Proyek pembangunan gedung klinik baru resmi dimulai hari ini...",
-      imageUrl: "https://picsum.photos/400/300?random=1",
-    ),
-    LocalNews(
-      title: "Program Bantuan Kesehatan 2025",
-      content:
-          "Pemerintah meluncurkan program bantuan kesehatan bagi masyarakat...",
-      imageUrl: "https://picsum.photos/400/300?random=2",
-    ),
-    LocalNews(
-      title: "Layanan Vaksinasi Gratis",
-      content:
-          "Layanan vaksinasi gratis kembali dibuka untuk umum minggu depan...",
-      imageUrl: "https://picsum.photos/400/300?random=3",
-    ),
-  ];
+// Ambil berita dari NewsService
+Future<List<News>> _fetchNews() async {
+  final List<Map<String, dynamic>> rawNews = await NewsService.getAllNews();
+  return rawNews.map((json) => News.fromJson(json)).toList();
 }
 
 class NewsPage extends StatelessWidget {
@@ -71,11 +67,11 @@ class NewsPage extends StatelessWidget {
                 ),
               ),
 
-              // DAFTAR BERITA (TANPA FIREBASE)
+              // DAFTAR BERITA DARI SUPABASE
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: FutureBuilder<List<LocalNews>>(
-                  future: fetchNews(),
+                child: FutureBuilder<List<News>>(
+                  future: _fetchNews(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
@@ -86,7 +82,24 @@ class NewsPage extends StatelessWidget {
                       );
                     }
 
-                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    if (snapshot.hasError) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 40),
+                        child: Center(
+                          child: Text(
+                            'Gagal memuat berita: ${snapshot.error}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+
+                    final newsList = snapshot.data ?? [];
+
+                    if (newsList.isEmpty) {
                       return const Padding(
                         padding: EdgeInsets.only(top: 40),
                         child: Center(
@@ -98,8 +111,6 @@ class NewsPage extends StatelessWidget {
                       );
                     }
 
-                    final newsList = snapshot.data!;
-
                     return GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -108,10 +119,11 @@ class NewsPage extends StatelessWidget {
                         crossAxisCount: 2,
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
-                        childAspectRatio: 0.75,
+                        childAspectRatio: 0.8,
                       ),
                       itemBuilder: (context, index) {
                         final news = newsList[index];
+                        final imageUrl = news.imageUrl?.trim();
 
                         return GestureDetector(
                           onTap: () {
@@ -121,7 +133,7 @@ class NewsPage extends StatelessWidget {
                                 builder: (_) => NewsDetailPage(
                                   title: news.title,
                                   content: news.content,
-                                  imageUrl: news.imageUrl,
+                                  imageUrl: imageUrl,
                                 ),
                               ),
                             );
@@ -141,16 +153,33 @@ class NewsPage extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                // Gambar berita
                                 ClipRRect(
-                                  borderRadius:
-                                      const BorderRadius.vertical(top: Radius.circular(12)),
-                                  child: Image.network(
-                                    news.imageUrl,
-                                    height: 120,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(12),
                                   ),
+                                  child: imageUrl != null && imageUrl.isNotEmpty
+                                      ? Image.network(
+                                          imageUrl,
+                                          height: 100,
+                                          width: double.infinity,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error, stackTrace) {
+                                            return Container(
+                                              height: 100,
+                                              color: Colors.grey[200],
+                                              child: const Icon(Icons.image_not_supported, size: 24),
+                                            );
+                                          },
+                                        )
+                                      : Container(
+                                          height: 100,
+                                          color: Colors.grey[200],
+                                          child: const Icon(Icons.article, size: 24),
+                                        ),
                                 ),
+
+                                // Judul
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
@@ -163,6 +192,8 @@ class NewsPage extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+
+                                // Konten ringkas
                                 Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 8),
                                   child: Text(

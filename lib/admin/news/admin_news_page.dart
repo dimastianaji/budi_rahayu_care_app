@@ -1,9 +1,10 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'admin_news_card.dart';
-import 'package:budi_rahayu_care_app/core/news/news_service.dart';
+import 'package:budi_rahayu_care_app/core/services/news_service.dart';
 
 class AdminNewsPage extends StatefulWidget {
   const AdminNewsPage({Key? key}) : super(key: key);
@@ -26,10 +27,39 @@ class _AdminNewsPageState extends State<AdminNewsPage> {
   final _contentController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    _loadNews();
+void initState() {
+  super.initState();
+  _loadNews();
+
+  // 👇 Tambahkan ini untuk cek profile user saat ini
+  final uid = Supabase.instance.client.auth.currentSession?.user.id;
+  if (uid != null) {
+    print('🟢 Current User ID: $uid');
+
+    // Cek apakah ada profile untuk user ini
+    _checkUserProfile(uid);
+  } else {
+    print('🔴 User belum login!');
   }
+}
+
+Future<void> _checkUserProfile(String uid) async {
+  try {
+    final profile = await Supabase.instance.client
+        .from('profiles')
+        .select()
+        .eq('id', uid)
+        .maybeSingle();
+
+    if (profile != null) {
+      print('👤 Profile ditemukan: ${profile['name']} - Role: ${profile['role']}');
+    } else {
+      print('🔴 Profile tidak ditemukan untuk user ini!');
+    }
+  } catch (e) {
+    print('❌ Error cek profile: $e');
+  }
+}
 
   @override
   void dispose() {
@@ -66,43 +96,73 @@ class _AdminNewsPageState extends State<AdminNewsPage> {
 
   /// ➕ Tambah berita
   Future<void> _addNews() async {
-    if (_titleController.text.isEmpty ||
-        _contentController.text.isEmpty) {
-      _showSnackBar('Judul dan isi wajib diisi');
+  if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
+    _showSnackBar('Judul dan isi wajib diisi');
+    return;
+  }
+
+  setState(() => isSubmitting = true);
+
+  try {
+    // Cek authentication terlebih dahulu
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) {
+      _showSnackBar('Silakan login terlebih dahulu');
+      setState(() => isSubmitting = false);
       return;
     }
 
-    setState(() => isSubmitting = true);
+    print('👤 Uploading as user: ${user.email}');
 
-    try {
-      String? imageUrl;
+    String? imageUrl;
 
-      if (_imageBytes != null) {
-        imageUrl = await NewsService.uploadNewsImage(
-          bytes: _imageBytes!,
-          fileName: '${DateTime.now().millisecondsSinceEpoch}.jpg',
-        );
-      }
-
-      await NewsService.createNews(
-        title: _titleController.text,
-        content: _contentController.text,
-        imageUrl: imageUrl,
+    if (_imageBytes != null) {
+      print('📸 Processing image upload...');
+      
+      // Upload dengan progress feedback
+      imageUrl = await NewsService.uploadNewsImage(
+        bytes: _imageBytes!,
+        fileName: 'news_${DateTime.now().millisecondsSinceEpoch}.jpg',
       );
-
-      _titleController.clear();
-      _contentController.clear();
-      _imageBytes = null;
-      showAddForm = false;
-
-      await _loadNews();
-      _showSnackBar('Berita berhasil ditambahkan');
-    } catch (_) {
-      _showSnackBar('Gagal menambahkan berita');
-    } finally {
-      setState(() => isSubmitting = false);
+      
+      print('🖼️ Image uploaded: $imageUrl');
     }
+
+    print('📝 Creating news entry...');
+    
+    await NewsService.createNews(
+      title: _titleController.text,
+      content: _contentController.text,
+      imageUrl: imageUrl,
+    );
+
+    // Reset form
+    _titleController.clear();
+    _contentController.clear();
+    _imageBytes = null;
+    showAddForm = false;
+
+    // Refresh list
+    await _loadNews();
+    
+    _showSnackBar('Berita berhasil ditambahkan ✅');
+    
+  } catch (e) {
+    print('❌ Error in _addNews: $e');
+    
+    String errorMessage = 'Gagal menambahkan berita';
+    
+    if (e.toString().contains('403')) {
+      errorMessage = 'Akses ditolak. Pastikan Anda sudah login dengan benar.';
+    } else if (e.toString().contains('storage')) {
+      errorMessage = 'Gagal mengupload gambar. Coba lagi.';
+    }
+    
+    _showSnackBar(errorMessage);
+  } finally {
+    setState(() => isSubmitting = false);
   }
+}
 
   /// ✏️ Update berita
   Future<void> _updateNews({
