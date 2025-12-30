@@ -6,6 +6,7 @@ import 'package:budi_rahayu_care_app/home/widgets/donasi_section.dart';
 import 'package:budi_rahayu_care_app/home/widgets/tujuan_section.dart';
 import 'package:budi_rahayu_care_app/home/widgets/anak_section.dart';
 import 'package:budi_rahayu_care_app/home/widgets/berita_section.dart';
+import 'package:budi_rahayu_care_app/home/widgets/documentation_section.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -22,6 +23,7 @@ class HomePage extends StatelessWidget {
             TujuanSection(),
             AnakSection(),
             BeritaSection(),
+            DocumentationSection(),
           ],
         ),
       ),

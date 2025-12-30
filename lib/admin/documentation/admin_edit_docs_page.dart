@@ -2,6 +2,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../documentation/documentation_model.dart';
+import '../documentation/documentation_service.dart';
+
 class AdminDocsPage extends StatefulWidget {
   const AdminDocsPage({Key? key}) : super(key: key);
 
@@ -11,13 +14,37 @@ class AdminDocsPage extends StatefulWidget {
 
 class _AdminDocsPageState extends State<AdminDocsPage> {
   bool showAddForm = false;
+  bool isLoading = false;
+
   Uint8List? _imageBytes;
   final ImagePicker _picker = ImagePicker();
 
-  final List<Uint8List> docs = [];
+  List<Documentation> docs = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _loadDocs();
+  }
+
+  // ======================
+  // LOAD DATA
+  // ======================
+  Future<void> _loadDocs() async {
+    setState(() => isLoading = true);
+    docs = await DocumentationService.getAll();
+    setState(() => isLoading = false);
+  }
+
+  // ======================
+  // PICK IMAGE
+  // ======================
   Future<void> _pickImage() async {
-    final XFile? file = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? file = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+
     if (file != null) {
       final bytes = await file.readAsBytes();
       setState(() {
@@ -26,22 +53,38 @@ class _AdminDocsPageState extends State<AdminDocsPage> {
     }
   }
 
-  void _addDoc() {
+  // ======================
+  // CREATE DOC
+  // ======================
+  Future<void> _addDoc() async {
     if (_imageBytes == null) return;
 
-    setState(() {
-      docs.insert(0, _imageBytes!);
-      _imageBytes = null;
-      showAddForm = false;
-    });
+    setState(() => isLoading = true);
+
+    await DocumentationService.create(
+      title: 'Dokumentasi',
+      imageBytes: _imageBytes!,
+      imageName: 'doc.jpg',
+    );
+
+    _imageBytes = null;
+    showAddForm = false;
+
+    await _loadDocs();
   }
 
-  void _deleteDoc(int index) {
-    setState(() {
-      docs.removeAt(index);
-    });
+  // ======================
+  // DELETE DOC
+  // ======================
+  Future<void> _deleteDoc(String id) async {
+    setState(() => isLoading = true);
+    await DocumentationService.delete(id);
+    await _loadDocs();
   }
 
+  // ======================
+  // UI
+  // ======================
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -64,7 +107,7 @@ class _AdminDocsPageState extends State<AdminDocsPage> {
 
             const SizedBox(height: 16),
 
-            // ➕ Tombol Tambah Dokumentasi
+            // ➕ Tambah Dokumentasi
             Card(
               elevation: 3,
               shape: RoundedRectangleBorder(
@@ -93,7 +136,7 @@ class _AdminDocsPageState extends State<AdminDocsPage> {
 
             const SizedBox(height: 12),
 
-            // 📸 Form Tambah Dokumentasi
+            // 📸 Form Tambah
             if (showAddForm)
               Card(
                 elevation: 3,
@@ -151,7 +194,7 @@ class _AdminDocsPageState extends State<AdminDocsPage> {
                           backgroundColor: const Color(0xFF0A2472),
                           minimumSize: const Size(double.infinity, 40),
                         ),
-                        onPressed: _addDoc,
+                        onPressed: isLoading ? null : _addDoc,
                         child: const Text(
                           "Tambah Dokumentasi",
                           style: TextStyle(color: Colors.white),
@@ -164,8 +207,15 @@ class _AdminDocsPageState extends State<AdminDocsPage> {
 
             const SizedBox(height: 16),
 
+            // ⏳ Loading
+            if (isLoading)
+              const Padding(
+                padding: EdgeInsets.all(24),
+                child: CircularProgressIndicator(),
+              ),
+
             // 🗂️ List Dokumentasi
-            for (int i = 0; i < docs.length; i++)
+            for (final doc in docs)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Card(
@@ -175,19 +225,20 @@ class _AdminDocsPageState extends State<AdminDocsPage> {
                   ),
                   child: Column(
                     children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(10),
+                      if (doc.imageUrl != null)
+                        ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(10),
+                          ),
+                          child: Image.network(
+                            doc.imageUrl!,
+                            height: 160,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                        child: Image.memory(
-                          docs[i],
-                          height: 160,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
                       TextButton(
-                        onPressed: () => _deleteDoc(i),
+                        onPressed: () => _deleteDoc(doc.id),
                         child: const Text(
                           "Hapus",
                           style: TextStyle(color: Colors.red),
