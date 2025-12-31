@@ -1,31 +1,26 @@
-class NewsModel {
+// news_model.dart
+class News {
+  final String id;
   final String title;
   final String content;
-  final String imageUrl;
-  final DateTime date;
+  final String? imageUrl;
+  final DateTime createdAt;
 
-  NewsModel({
+  News({
+    required this.id,
     required this.title,
     required this.content,
-    required this.imageUrl,
-    required this.date,
+    this.imageUrl,
+    required this.createdAt,
   });
 
-  factory NewsModel.fromMap(Map<String, dynamic> data) {
-    return NewsModel(
-      title: data['title'] ?? '',
-      content: data['content'] ?? '',
-      imageUrl: data['imageUrl'] ?? '',
-      date: DateTime.parse(data['date']),
+  factory News.fromJson(Map<String, dynamic> json) {
+    return News(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      content: json['content'] as String,
+      imageUrl: json['image_url'] as String?,
+      createdAt: DateTime.parse(json['created_at'] as String),
     );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'title': title,
-      'content': content,
-      'imageUrl': imageUrl,
-      'date': date.toIso8601String(),
-    };
   }
 }
